@@ -2,4 +2,8 @@
 
 test('testando código 200')
     ->get('/')
-    ->assertStatus(200);
+    ->assertOk();
+
+test('testando código 404')
+    ->get('/not-exists')
+    ->assertNotFound();

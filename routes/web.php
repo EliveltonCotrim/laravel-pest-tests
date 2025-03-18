@@ -4,6 +4,7 @@ use App\Jobs\ImportProductsJob;
 use App\Mail\WelcomeEmail;
 use App\Models\Product;
 use App\Models\User;
+use App\Actions\CreateProductAction;
 use App\Notifications\NewProductionNofication;
 use Illuminate\Support\Facades\Route;
 use function Pest\Laravel\options;
@@ -26,7 +27,7 @@ Route::post('/import-products', function (Request $request) {
 
     $openToRead = fopen($file->getRealPath(), 'r');
 
-    while(($data = fgetcsv($openToRead, 1000, ',')) !== false){
+    while (($data = fgetcsv($openToRead, 1000, ',')) !== false) {
         Product::create([
             'title' => $data[0],
             'owner_id' => $data[1],
@@ -35,27 +36,24 @@ Route::post('/import-products', function (Request $request) {
     }
 })->name('import.products');
 
-Route::post('sending-email/{user}', function(User $user){
+Route::post('sending-email/{user}', function (User $user) {
 
     Mail::to($user)->send(new WelcomeEmail($user));
 })->name('sending-email');
 
-Route::post('porduct-import', function(){
+Route::post('porduct-import', function () {
     $data = request()->get('data');
     ImportProductsJob::dispatch($data, auth()->id());
 
 })->name('product.import');
 
-Route::post('porduct/store', function(){
+Route::post('porduct/store', function () {
 
     $data = request()->all();
 
-    Product::create($data);
-
-    auth()->user()->notify(new NewProductionNofication());
+    app(CreateProductAction::class)
+        ->handle($data['title'], auth()->user()->id);
 
     return response()->json(true, 201);
 
 })->name('product.store');
-
-

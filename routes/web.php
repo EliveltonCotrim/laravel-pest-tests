@@ -1,8 +1,10 @@
 <?php
 
+use App\Jobs\ImportProductsJob;
 use App\Mail\WelcomeEmail;
 use App\Models\Product;
 use App\Models\User;
+use App\Notifications\NewProductionNofication;
 use Illuminate\Support\Facades\Route;
 use function Pest\Laravel\options;
 
@@ -37,3 +39,23 @@ Route::post('sending-email/{user}', function(User $user){
 
     Mail::to($user)->send(new WelcomeEmail($user));
 })->name('sending-email');
+
+Route::post('porduct-import', function(){
+    $data = request()->get('data');
+    ImportProductsJob::dispatch($data, auth()->id());
+
+})->name('product.import');
+
+Route::post('porduct/store', function(){
+
+    $data = request()->all();
+
+    Product::create($data);
+
+    auth()->user()->notify(new NewProductionNofication());
+
+    return response()->json(true, 201);
+
+})->name('product.store');
+
+

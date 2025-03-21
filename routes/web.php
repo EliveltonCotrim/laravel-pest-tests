@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\JeremiasMiddleware;
 use App\Jobs\ImportProductsJob;
 use App\Mail\WelcomeEmail;
 use App\Models\Product;
@@ -57,3 +58,5 @@ Route::post('porduct/store', function () {
     return response()->json(true, 201);
 
 })->name('product.store');
+
+Route::get('/secure-route', fn() => ['Olá'])->middleware(JeremiasMiddleware::class)->name('secure-route');

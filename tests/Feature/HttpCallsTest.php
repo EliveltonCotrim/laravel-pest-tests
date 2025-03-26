@@ -1,7 +1,24 @@
 <?php
 
-it('has httpcalls page', function () {
-    $response = $this->get('/httpcalls');
+use App\Console\Commands\ImportFromAmazonCommand;
+use App\Models\User;
+use function Pest\Laravel\artisan;
+use function Pest\Laravel\assertDatabaseCount;
+use function Pest\Laravel\assertDatabaseHas;
 
-    $response->assertStatus(200);
+it('should fake an api request', function () {
+    User::factory()->create();
+
+    $response = Http::fake([
+        'https://api.amazon.com/products' => Http::response([
+            ['title' => 'Product 1'],
+            ['title' => 'Product 2'],
+        ]),
+    ]);
+
+    artisan(ImportFromAmazonCommand::class)->assertSuccessful();
+
+    assertDatabaseHas('products', ['title' => 'Product 1']);
+    assertDatabaseHas('products', ['title' => 'Product 2']);
+    assertDatabaseCount('products', 2);
 });

@@ -48,12 +48,11 @@ Route::post('porduct-import', function () {
 
 })->name('product.import');
 
-Route::post('porduct/store', function () {
+Route::post('porduct/store', function (CreateProductAction $action) {
 
     $data = request()->all();
 
-    app(CreateProductAction::class)
-        ->handle($data['title'], auth()->user()->id);
+    $action->handle($data['title'], auth()->user()->id);
 
     return response()->json(true, 201);
 

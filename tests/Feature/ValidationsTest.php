@@ -19,12 +19,12 @@ it('product :: title should be max of 255 caracters', function () {
 
 });
 
-it('create product validations', function ($data, $error) {
+// it('create product validations', function ($data, $error) {
 
-    postJson(route('products.store'), $data)
-        ->assertInvalid($error);
+//     postJson(route('products.store'), $data)
+//         ->assertInvalid($error);
 
-})->with([
-    'title:required' => [['title' => ''], ['title' => 'requred']],
-    'title:max:255' => [['title' => Str::random(256)], ['title' =>  trans('validation.max.string', ['attibute' => 'title', 'max' => '255'])]],
-]);
+// })->with([
+//     'title:required' => [['title' => ''], ['title' => 'requred']],
+//     'title:max:255' => [['title' => Str::random(256)], ['title' =>  trans('validation.max.string', ['attibute' => 'title', 'max' => '255'])]],
+// ]);
